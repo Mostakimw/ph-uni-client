@@ -1,8 +1,8 @@
 import { useGetAllSemestersQuery } from "../../../redux/features/academicSemester/academicSemesterApi";
 
 const AcademicSemester = () => {
-  const academicSemester = useGetAllSemestersQuery(undefined);
-  console.log(academicSemester);
+  const { data } = useGetAllSemestersQuery(undefined);
+  console.log(data);
   return <div>this is academic semester</div>;
 };
 
