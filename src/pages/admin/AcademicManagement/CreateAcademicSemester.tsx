@@ -2,12 +2,8 @@ import { FieldValues, SubmitHandler } from "react-hook-form";
 import PHForm from "../../../components/form/PHForm";
 import { Button, Col, Flex } from "antd";
 import PHSelect from "../../../components/form/PHSelect";
-
-const semestersName = [
-  { value: "01", label: "Autumn" },
-  { value: "02", label: "Summer" },
-  { value: "03", label: "Fall" },
-];
+import { monthOptions } from "../../../constants/global";
+import { semestersName } from "../../../constants/semester";
 
 // ! year options
 const currentYear = new Date().getFullYear();
@@ -23,7 +19,9 @@ const CreateAcademicSemester = () => {
     const createSemData = {
       name,
       code: data?.name,
-      year: data?.year
+      year: data?.year,
+      startMonth: data?.startMonth,
+      endMonth: data?.endMonth,
     };
     console.log(createSemData);
   };
@@ -33,6 +31,12 @@ const CreateAcademicSemester = () => {
         <PHForm onSubmit={onSubmit}>
           <PHSelect name="name" label="Name" options={semestersName} />
           <PHSelect name="year" label="Year" options={yearOptions} />
+          <PHSelect
+            name="startMonth"
+            label="Start Month"
+            options={monthOptions}
+          />
+          <PHSelect name="endMonth" label="End Month" options={monthOptions} />
           <Button htmlType="submit">Submit</Button>
         </PHForm>
       </Col>
