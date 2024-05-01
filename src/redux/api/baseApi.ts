@@ -9,7 +9,6 @@ import {
 import { RootState } from "../store";
 import { logout, setUser } from "../features/auth/authSlice";
 import { toast } from "sonner";
-import { TResponse } from "../../types/global";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/v1",
@@ -33,8 +32,11 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   let result = await baseQuery(args, api, extraOptions);
 
   if (result?.error?.status === 404) {
-    toast.error(result?.error?.data?.message);
+    toast.error(
+      (result?.error?.data as { message: string } | undefined)?.message
+    );
   }
+
   if (result?.error?.status === 401) {
     //* Send Refresh
     // console.log("Sending refresh token");
