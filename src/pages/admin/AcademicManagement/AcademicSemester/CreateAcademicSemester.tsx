@@ -1,15 +1,15 @@
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import PHForm from "../../../components/form/PHForm";
+import PHForm from "../../../../components/form/PHForm";
 import { Button, Col, Flex } from "antd";
-import PHSelect from "../../../components/form/PHSelect";
-import { monthOptions } from "../../../constants/global";
-import { semestersName } from "../../../constants/semester";
+import PHSelect from "../../../../components/form/PHSelect";
+import { monthOptions } from "../../../../constants/global";
+import { semestersName } from "../../../../constants/semester";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { academicSemesterSchema } from "../../../schemas/academicManagement/academicManagement.schema";
-import { useAddAcademicSemesterMutation } from "../../../redux/features/admin/academicManagement.api";
+import { academicSemesterSchema } from "../../../../schemas/academicManagement/academicManagement.schema";
+import { useAddAcademicSemesterMutation } from "../../../../redux/features/admin/academicManagement.api";
 import { toast } from "sonner";
-import { TResponse } from "../../../types/global";
-import { TAcademicSemester } from "../../../types/academicManagement.types";
+import { TResponse } from "../../../../types/global";
+import { TAcademicSemester } from "../../../../types/academicManagement.types";
 
 // ! year options
 const currentYear = new Date().getFullYear();
@@ -23,6 +23,7 @@ const CreateAcademicSemester = () => {
   const [addAcademicSemester] = useAddAcademicSemesterMutation();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    
     const toastId = toast.loading("Creating...");
     const name = semestersName[Number(data.name) - 1].label;
     const createSemData = {
@@ -33,7 +34,9 @@ const CreateAcademicSemester = () => {
       endMonth: data?.endMonth,
     };
     try {
-      const res = (await addAcademicSemester(createSemData)) as TResponse<TAcademicSemester>;
+      const res = (await addAcademicSemester(
+        createSemData
+      )) as TResponse<TAcademicSemester>;
 
       if (res.error) {
         toast.error(res.error.data.message, { id: toastId });
