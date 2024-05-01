@@ -9,6 +9,7 @@ import { academicSemesterSchema } from "../../../schemas/academicManagement/acad
 import { useAddAcademicSemesterMutation } from "../../../redux/features/admin/academicManagement.api";
 import { toast } from "sonner";
 import { TResponse } from "../../../types/global";
+import { TAcademicSemester } from "../../../types/academicManagement.types";
 
 // ! year options
 const currentYear = new Date().getFullYear();
@@ -32,7 +33,7 @@ const CreateAcademicSemester = () => {
       endMonth: data?.endMonth,
     };
     try {
-      const res = (await addAcademicSemester(createSemData)) as TResponse;
+      const res = (await addAcademicSemester(createSemData)) as TResponse<TAcademicSemester>;
 
       if (res.error) {
         toast.error(res.error.data.message, { id: toastId });
