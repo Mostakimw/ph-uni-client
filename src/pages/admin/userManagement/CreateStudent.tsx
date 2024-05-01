@@ -2,6 +2,8 @@ import { Button, Col, Divider, Row } from "antd";
 import PHForm from "../../../components/form/PHForm";
 import PHInput from "../../../components/form/PHInput";
 import { FieldValues, SubmitErrorHandler } from "react-hook-form";
+import PHSelect from "../../../components/form/PHSelect";
+import { bloodGroupOptions, genderOptions } from "../../../constants/global";
 
 const studentDummyData = {
   password: "student123",
@@ -69,13 +71,17 @@ const CreateStudent = () => {
               <PHInput type="text" name="name.lastName" label="Name" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="gender" label="Gender" />
+              <PHSelect options={genderOptions} name="gender" label="Gender" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput type="text" name="dateOfBirth" label="Date of Birth" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="bloogGroup" label="Blood Group" />
+              <PHSelect
+                options={bloodGroupOptions}
+                name="bloogGroup"
+                label="Blood Group"
+              />
             </Col>
           </Row>
 
