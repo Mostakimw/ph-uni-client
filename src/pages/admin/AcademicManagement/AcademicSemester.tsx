@@ -10,8 +10,11 @@ export type TTableData = Pick<
 >;
 
 const AcademicSemester = () => {
-  const [params, setParams] = useState<TQueryParam | undefined>(undefined);
-  const { data: semesterData } = useGetAllSemestersQuery(params);
+  const [params, setParams] = useState<TQueryParam[] | undefined>(undefined);
+  const {
+    data: semesterData,
+    isFetching,
+  } = useGetAllSemestersQuery(params);
 
   //! reconstructing table data
   const data = semesterData?.data?.map(
@@ -27,7 +30,6 @@ const AcademicSemester = () => {
     {
       title: "Name",
       dataIndex: "name",
-      showSorterTooltip: { target: "full-header" },
       filters: [
         {
           text: "Summer",
@@ -87,10 +89,18 @@ const AcademicSemester = () => {
       filters.year?.forEach((item) =>
         queryParams.push({ name: "year", value: item })
       );
+      
       setParams(queryParams);
     }
   };
-  return <Table columns={columns} dataSource={data} onChange={onChange} />;
+  return (
+    <Table
+      loading={isFetching}
+      columns={columns}
+      dataSource={data}
+      onChange={onChange}
+    />
+  );
 };
 
 export default AcademicSemester;
