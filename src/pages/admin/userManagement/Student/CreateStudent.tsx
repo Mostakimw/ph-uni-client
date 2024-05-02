@@ -6,7 +6,7 @@ import PHSelect from "../../../../components/form/PHSelect";
 import { bloodGroupOptions, genderOptions } from "../../../../constants/global";
 import PHDatePicker from "../../../../components/form/PHDatePicker";
 import {
-  useGetAllAcademicDepartmentQuery,
+  useGetAcademicDepartmentQuery,
   useGetAllSemestersQuery,
 } from "../../../../redux/features/admin/academicManagement.api";
 import { useAddStudentMutation } from "../../../../redux/features/admin/userManagement.api";
@@ -93,7 +93,7 @@ const CreateStudent = () => {
   const { data: semData, isLoading: semIsLoading } =
     useGetAllSemestersQuery(undefined);
   const { data: depData, isLoading: depIsLoading } =
-    useGetAllAcademicDepartmentQuery(undefined, { skip: semIsLoading });
+    useGetAcademicDepartmentQuery(undefined);
 
   const semesterOptions = semData?.data?.map((sem) => ({
     value: sem._id,
