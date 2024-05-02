@@ -1,16 +1,17 @@
-import { Button, Col, Divider, Row } from "antd";
-import PHForm from "../../../components/form/PHForm";
-import PHInput from "../../../components/form/PHInput";
-import { FieldValues, SubmitErrorHandler } from "react-hook-form";
-import PHSelect from "../../../components/form/PHSelect";
-import { bloodGroupOptions, genderOptions } from "../../../constants/global";
-import PHDatePicker from "../../../components/form/PHDatePicker";
+import { Button, Col, Divider, Form, Input, Row } from "antd";
+import PHForm from "../../../../components/form/PHForm";
+import PHInput from "../../../../components/form/PHInput";
+import { Controller, FieldValues, SubmitHandler } from "react-hook-form";
+import PHSelect from "../../../../components/form/PHSelect";
+import { bloodGroupOptions, genderOptions } from "../../../../constants/global";
+import PHDatePicker from "../../../../components/form/PHDatePicker";
 import {
   useGetAllAcademicDepartmentQuery,
   useGetAllSemestersQuery,
-} from "../../../redux/features/admin/academicManagement.api";
-import { useAddStudentMutation } from "../../../redux/features/admin/userManagement.api";
+} from "../../../../redux/features/admin/academicManagement.api";
+import { useAddStudentMutation } from "../../../../redux/features/admin/userManagement.api";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const studentDummyData = {
   password: "student123",
   student: {
@@ -87,6 +88,8 @@ const studentDefaultValues = {
 
 const CreateStudent = () => {
   const [addStudent] = useAddStudentMutation();
+  // console.log({ data, error });
+
   const { data: semData, isLoading: semIsLoading } =
     useGetAllSemestersQuery(undefined);
   const { data: depData, isLoading: depIsLoading } =
@@ -101,66 +104,81 @@ const CreateStudent = () => {
     label: `${dep.name}`,
   }));
 
-  const onSubmit: SubmitErrorHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
     const studentData = {
       password: "student123",
       student: data,
     };
-    console.log(studentData);
 
     const formData = new FormData();
+
     formData.append("data", JSON.stringify(studentData));
+    formData.append("file", data.image);
 
     addStudent(formData);
 
-    //! form data can be consoled like this
+    //! This is for development
+    //! Just for checking
     // console.log(Object.fromEntries(formData));
-    // formData.append("data", data)
   };
+
   return (
-    <Row>
+    <Row justify="center">
       <Col span={24}>
         <PHForm onSubmit={onSubmit} defaultValues={studentDefaultValues}>
           <Divider>Personal Info.</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="name.firstName" label="Name" />
+              <PHInput type="text" name="name.firstName" label="First Name" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="name.middleName" label="Name" />
+              <PHInput type="text" name="name.middleName" label="Middle Name" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="name.lastName" label="Name" />
+              <PHInput type="text" name="name.lastName" label="Last Name" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHSelect options={genderOptions} name="gender" label="Gender" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHDatePicker name="dateOfBirth" label="Date of Birth" />
+              <PHDatePicker name="dateOfBirth" label="Date of birth" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHSelect
                 options={bloodGroupOptions}
                 name="bloogGroup"
-                label="Blood Group"
+                label="Blood group"
+              />
+            </Col>
+            <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
+              <Controller
+                name="image"
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Form.Item label="Picture">
+                    <Input
+                      type="file"
+                      value={value?.fileName}
+                      {...field}
+                      onChange={(e) => onChange(e.target.files?.[0])}
+                    />
+                  </Form.Item>
+                )}
               />
             </Col>
           </Row>
-
-          {/* ---------------- */}
           <Divider>Contact Info.</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput type="text" name="email" label="Email" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="contactNo" label="Contact No." />
+              <PHInput type="text" name="contactNo" label="Contact" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput
                 type="text"
                 name="emergencyContactNo"
-                label="Emergency Contact No."
+                label="Emergency Contact"
               />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
@@ -178,8 +196,6 @@ const CreateStudent = () => {
               />
             </Col>
           </Row>
-
-          {/* ------------------- */}
           <Divider>Guardian</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
@@ -200,7 +216,7 @@ const CreateStudent = () => {
               <PHInput
                 type="text"
                 name="guardian.fatherContactNo"
-                label="Father Contact No."
+                label="Father ContactNo"
               />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
@@ -221,20 +237,14 @@ const CreateStudent = () => {
               <PHInput
                 type="text"
                 name="guardian.motherContactNo"
-                label="Mother Contact No."
+                label="Mother ContactNo"
               />
             </Col>
           </Row>
-
-          {/* ------------------ */}
           <Divider>Local Guardian</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput
-                type="text"
-                name="localGuardian.name"
-                label="Local Guardian Name"
-              />
+              <PHInput type="text" name="localGuardian.name" label="Name" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput
@@ -258,8 +268,6 @@ const CreateStudent = () => {
               />
             </Col>
           </Row>
-
-          {/* ----------------- */}
           <Divider>Academic Info.</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
@@ -275,7 +283,7 @@ const CreateStudent = () => {
                 options={departmentOptions}
                 disabled={depIsLoading}
                 name="academicDepartment"
-                label="Academic Department"
+                label="Admission Department"
               />
             </Col>
           </Row>
