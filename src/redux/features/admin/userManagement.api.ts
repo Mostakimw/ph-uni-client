@@ -25,6 +25,7 @@ const userManagementApi = baseApi.injectEndpoints({
         };
       },
     }),
+    
     addStudent: builder.mutation({
       query: (data) => ({
         url: "/users/create-student",
