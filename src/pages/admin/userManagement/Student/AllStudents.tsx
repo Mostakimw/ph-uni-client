@@ -1,22 +1,39 @@
-import { Table, TableColumnsType, TableProps } from "antd";
+import {
+  Button,
+  Pagination,
+  Space,
+  Table,
+  TableColumnsType,
+  TableProps,
+} from "antd";
 import { useState } from "react";
 import { TQueryParam, TStudent } from "../../../../types";
 import { useGetAllStudentsQuery } from "../../../../redux/features/admin/userManagement.api";
 
 export type TTableData = Pick<
   TStudent,
-  "fullName" | "email" | "gender" | "contactNo"
+  "fullName" | "email" | "gender" | "contactNo" | "id"
 >;
 
 const AllStudents = () => {
-  const [params, setParams] = useState<TQueryParam[] | undefined>(undefined);
+  const [params, setParams] = useState<TQueryParam[]>([]);
+  const [page, setPage] = useState(1);
 
-  const { data: studentData, isFetching } = useGetAllStudentsQuery(params);
+  const { data: studentData, isFetching } = useGetAllStudentsQuery([
+    // TODO: have to fix the limit when student data will be huge
+    { name: "limit", value: 2 },
+    { name: "page", value: page },
+    { name: "sort", value: "id" },
+    ...params,
+  ]);
+
+  const metaData = studentData?.meta;
 
   //! reconstructing table data
   const data = studentData?.data?.map(
-    ({ _id, fullName, email, gender, contactNo }) => ({
+    ({ _id, fullName, id, email, gender, contactNo }) => ({
       key: _id,
+      id,
       fullName,
       email,
       gender,
@@ -43,6 +60,10 @@ const AllStudents = () => {
       ],
     },
     {
+      title: "Roll",
+      dataIndex: "id",
+    },
+    {
       title: "Email",
       dataIndex: "email",
     },
@@ -53,6 +74,20 @@ const AllStudents = () => {
     {
       title: "Contact",
       dataIndex: "contactNo",
+    },
+    {
+      title: "Actions",
+      key: "x",
+      render: (item) => {
+        console.log(item);
+        return (
+          <Space>
+            <Button>Details</Button>
+            <Button>Update</Button>
+            <Button>Block</Button>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -75,13 +110,21 @@ const AllStudents = () => {
     }
   };
   return (
-    <Table
-      loading={isFetching}
-      columns={columns}
-      dataSource={data}
-      onChange={onChange}
-      pagination={false}
-    />
+    <>
+      <Table
+        loading={isFetching}
+        columns={columns}
+        dataSource={data}
+        onChange={onChange}
+        pagination={false}
+      />
+      <Pagination
+        current={page}
+        onChange={(value) => setPage(value)}
+        pageSize={metaData?.limit}
+        total={metaData?.total}
+      />
+    </>
   );
 };
 
