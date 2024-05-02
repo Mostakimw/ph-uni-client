@@ -5,7 +5,11 @@ import { FieldValues, SubmitErrorHandler } from "react-hook-form";
 import PHSelect from "../../../components/form/PHSelect";
 import { bloodGroupOptions, genderOptions } from "../../../constants/global";
 import PHDatePicker from "../../../components/form/PHDatePicker";
-import { useGetAllSemestersQuery } from "../../../redux/features/admin/academicManagement.api";
+import {
+  useGetAllAcademicDepartmentQuery,
+  useGetAllSemestersQuery,
+} from "../../../redux/features/admin/academicManagement.api";
+import { useAddStudentMutation } from "../../../redux/features/admin/userManagement.api";
 
 const studentDummyData = {
   password: "student123",
@@ -55,7 +59,7 @@ const studentDefaultValues = {
   gender: "male",
   bloogGroup: "A+",
 
-  email: "student2@gmail.com",
+  email: "student234@gmail.com",
   contactNo: "1235678",
   emergencyContactNo: "987-654-3210",
   presentAddress: "123 Main St, Cityville",
@@ -77,23 +81,37 @@ const studentDefaultValues = {
     address: "789 Pine St, Villageton",
   },
 
-  admissionSemester: "65b0104110b74fcbd7a25d92",
-  academicDepartment: "65b00fb010b74fcbd7a25d8e",
+  // admissionSemester: "65b0104110b74fcbd7a25d92",
+  // academicDepartment: "65b00fb010b74fcbd7a25d8e",
 };
 
 const CreateStudent = () => {
-  const { data: semData } = useGetAllSemestersQuery(undefined)
+  const [addStudent] = useAddStudentMutation();
+  const { data: semData, isLoading: semIsLoading } =
+    useGetAllSemestersQuery(undefined);
+  const { data: depData, isLoading: depIsLoading } =
+    useGetAllAcademicDepartmentQuery(undefined, { skip: semIsLoading });
 
-  const semesterOptions = semData?.data?.map(sem => ({
+  const semesterOptions = semData?.data?.map((sem) => ({
     value: sem._id,
-    label: `${sem.name} ${sem.year}`
-  }))
-  console.log(semData);
-  const onSubmit: SubmitErrorHandler<FieldValues> = (data) => {
-    console.log(data);
-    // const formData = new FormData();
+    label: `${sem.name} ${sem.year}`,
+  }));
+  const departmentOptions = depData?.data?.map((dep) => ({
+    value: dep._id,
+    label: `${dep.name}`,
+  }));
 
-    // formData.append("something", "data of something");
+  const onSubmit: SubmitErrorHandler<FieldValues> = (data) => {
+    const studentData = {
+      password: "student123",
+      student: data,
+    };
+    console.log(studentData);
+
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(studentData));
+
+    addStudent(formData);
 
     //! form data can be consoled like this
     // console.log(Object.fromEntries(formData));
@@ -241,18 +259,25 @@ const CreateStudent = () => {
             </Col>
           </Row>
 
-
           {/* ----------------- */}
           <Divider>Academic Info.</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHSelect
                 options={semesterOptions}
+                disabled={semIsLoading}
                 name="admissionSemester"
                 label="Admission Semester"
               />
             </Col>
-            
+            <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
+              <PHSelect
+                options={departmentOptions}
+                disabled={depIsLoading}
+                name="academicDepartment"
+                label="Academic Department"
+              />
+            </Col>
           </Row>
 
           <Button htmlType="submit">Submit</Button>
