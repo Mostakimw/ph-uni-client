@@ -1,5 +1,6 @@
 import {
   Button,
+  Modal,
   Pagination,
   Space,
   Table,
@@ -16,9 +17,22 @@ export type TTableData = Pick<
   "fullName" | "email" | "gender" | "contactNo" | "id"
 >;
 
+//! starts here
+
 const AllStudents = () => {
   const [params, setParams] = useState<TQueryParam[]>([]);
   const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    console.log("okclicked");
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const { data: studentData, isFetching } = useGetAllStudentsQuery([
     // TODO: have to fix the limit when student data will be huge
@@ -83,9 +97,11 @@ const AllStudents = () => {
         console.log(item);
         return (
           <Space>
-            <Link to={`/admin/student-data/${item?.key}`}><Button>Details</Button></Link>
+            <Link to={`/admin/student-data/${item?.key}`}>
+              <Button>Details</Button>
+            </Link>
             <Button>Update</Button>
-            <Button>Block</Button>
+            <Button onClick={showModal}>Block</Button>
           </Space>
         );
       },
@@ -125,6 +141,14 @@ const AllStudents = () => {
         pageSize={metaData?.limit}
         total={metaData?.total}
       />
+      <Modal
+        title="Warning"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        Are you sure? you want to block this User?
+      </Modal>
     </>
   );
 };
